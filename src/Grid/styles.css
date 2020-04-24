@@ -1,0 +1,7 @@
+.grid-row{
+    display: flex;
+}
+.reset-buttons{
+    display: flex;
+    flex-direction: column;
+}
