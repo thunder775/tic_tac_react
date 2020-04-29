@@ -9,9 +9,7 @@ function Grid(props) {
 
 
     let [moves, setMoves] = useState([]);
-    let [isXNext, setXNext] = useState(true);
-    let [playerStatus, setPlayerStatus] = useState("player X move");
-    let [status, setStatus] = useState(["player X move"]);
+    let [playerStatus, setPlayerStatus] = useState('Player X\'s Move');
     let [potentialResetMove, setResetMove] = useState(null);
 
     function isGameDraw(squares) {
@@ -49,18 +47,54 @@ function Grid(props) {
         return false;
     }
 
-    function handleResetMove() {
-        setMoves(moves.slice(0, potentialResetMove+1));
-        setStatus(status.slice(0, potentialResetMove+1));
+    function getFillingValue() {
+        let filled = 0;
+        squares.forEach((square) => {
+            if (square !== null) filled++;
+        });
+
+        if (filled % 2 === 0) {
+            return 'X'
+        } else {
+            return 'O'
+        }
+    }
+
+    function getPlayerStatus(squaresCopy) {
+
+        let filled = 0;
+        squaresCopy.forEach((square) => {
+            if (square !== null) filled++;
+        });
+        if (isGameWon(squaresCopy)) {
+            if (filled % 2 !== 0) {
+                return 'Player X Won'
+            } else {
+                return 'Player O won'
+
+            }
+        } else if (isGameDraw(squaresCopy)) {
+            return 'Game Draw'
+        } else if (filled % 2 === 0) {
+            return 'Player X\'s Move'
+        } else {
+            return 'Player O\'s Move'
+
+        }
+
+    }
+
+    function handleResetMove(offset) {
+        setMoves(moves.slice(0, potentialResetMove + 2));
         setResetMove(null);
     }
 
     function updateGrid(offset) {
         if (potentialResetMove !== null) {
-            handleResetMove();
-            return;
+            handleResetMove(offset);
         }
         if (isGameWon(squares)) {
+
             return;
         }
         let squaresCopy = squares.slice();
@@ -68,37 +102,14 @@ function Grid(props) {
             return;
         }
 
-        squaresCopy[offset] = isXNext ? 'X' : 'O';
+        squaresCopy[offset] = getFillingValue();
         setSquares(squaresCopy);
         let tempCopy = moves.slice();
         tempCopy.push(squaresCopy);
-
-        setMoves(tempCopy);
-        moves.push(squaresCopy);
-
-
-        setXNext(!isXNext);
-
-        setPlayerStatus(isXNext ? 'player 0 move' : 'player x move');
-
-
-        if (isGameWon(squaresCopy)) {
-            setPlayerStatus(isXNext ? 'X won' : 'O won');
-            let tempStatus = status.slice();
-            tempStatus.push(isXNext ? 'X won' : 'O won');
-            setStatus(tempStatus);
-        } else if (isGameDraw(squaresCopy)) {
-            setPlayerStatus('game draw');
-            let tempStatus = status.slice();
-            tempStatus.push("game draw");
-            setStatus(tempStatus);
-
-        }else{
-            let tempStatus = status.slice();
-            tempStatus.push(isXNext ? 'player 0 move' : 'player x move');
-            setStatus(tempStatus);
+        if (potentialResetMove === null) {
+            setMoves(tempCopy);
         }
-
+        setPlayerStatus(getPlayerStatus(squaresCopy));
     }
 
     function getRow(offset) {
@@ -118,9 +129,9 @@ function Grid(props) {
             buttons.push(
                 <button className="square-button" onClick={() => {
                     setSquares(moves[i]);
-                    setPlayerStatus(status[i+1]);
+                    setPlayerStatus(getPlayerStatus(moves[i]));
                     setResetMove(i);
-                    console.log(status)
+                    // console.log(status)
                     // setMoves(moves.slice(0,i+1));
                     // setStatus(status.slice(0,i+1))
                 }}>{i + 1}</button>
