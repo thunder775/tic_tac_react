@@ -1,15 +1,12 @@
 import React, {useState} from "react";
 import Square from "../Square";
 import './styles.css';
-import Reset from '../resetMove'
 
 function Grid(props) {
     let [squares, setSquares] = useState(Array(9).fill(null)
     );
 
-
     let [moves, setMoves] = useState([]);
-    let [playerStatus, setPlayerStatus] = useState('Player X\'s Move');
     let [potentialResetMove, setResetMove] = useState(null);
 
     function isGameDraw(squares) {
@@ -41,10 +38,8 @@ function Grid(props) {
         if (squares[0] === squares[4] && squares[4] === squares[8] && squares[0] !== null) {
             return true;
         }
-        if (squares[2] === squares[4] && squares[4] === squares[6] && squares[2] !== null) {
-            return true;
-        }
-        return false;
+        return squares[2] === squares[4] && squares[4] === squares[6] && squares[2] !== null;
+
     }
 
     function getFillingValue() {
@@ -109,7 +104,6 @@ function Grid(props) {
         if (potentialResetMove === null) {
             setMoves(tempCopy);
         }
-        setPlayerStatus(getPlayerStatus(squaresCopy));
     }
 
     function getRow(offset) {
@@ -129,7 +123,6 @@ function Grid(props) {
             buttons.push(
                 <button className="square-button" onClick={() => {
                     setSquares(moves[i]);
-                    setPlayerStatus(getPlayerStatus(moves[i]));
                     setResetMove(i);
                     // console.log(status)
                     // setMoves(moves.slice(0,i+1));
@@ -151,11 +144,18 @@ function Grid(props) {
             getRow(6)
         }
             <p>{
-                playerStatus
+                getPlayerStatus(squares)
             }</p>
-            <div className={"reset-buttons"}>{
-                getResetButtons()
-            }</div>
+            <div className={"reset-buttons"}>
+                <button  onClick={() => {
+                    setSquares(Array(9).fill(null));
+                    setMoves([]);
+                    setResetMove(null)
+                }}>Reset</button>
+                {
+
+                    getResetButtons()
+                }</div>
 
         </div>
 
